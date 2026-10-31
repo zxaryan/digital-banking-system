@@ -12,7 +12,6 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "account")
-@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
@@ -49,8 +48,5 @@ public class Account {
 
     @CreationTimestamp
     private LocalDateTime createdAt;
-
-    @UpdateTimestamp
-    private LocalDateTime updatedAt;
 
 }

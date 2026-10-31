@@ -10,7 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.UUID;
+import java.security.SecureRandom;
 
 @Service
 @Slf4j
@@ -18,6 +18,7 @@ import java.util.UUID;
 public class AccountServiceImpl implements AccountService {
 
     private final AccountRepository accountRepository;
+    private static final SecureRandom secureRandom = new SecureRandom();
 
     @Override
     public AccountResponse createAccount(CreateAccountRequest request) {
@@ -30,35 +31,49 @@ public class AccountServiceImpl implements AccountService {
             );
         }
 
-        Account account = Account.builder()
-                .accountNumber(UUID.randomUUID().toString().replace("-", "").substring(0, 16))
-                .accountHolderName(request.getAccountHolderName())
-                .email(request.getEmail())
-                .phone(request.getPhone())
-                .accountType(request.getAccountType())
-                .accountStatus(AccountStatus.ACTIVE)
-                .balance(BigDecimal.ZERO)
-                .dailyTransactionLimit(new BigDecimal("200000.00"))
-                .build();
+        Account account = new Account();
+
+        account.setAccountNumber(generateAccountNumber());
+        account.setAccountHolderName(request.getAccountHolderName());
+        account.setPhone(request.getPhone());
+        account.setEmail(request.getEmail());
+        account.setAccountType(request.getAccountType());
+        account.setAccountStatus(AccountStatus.ACTIVE);
+        account.setBalance(BigDecimal.ZERO);
+        account.setDailyTransactionLimit(new BigDecimal("200000.00"));
 
         Account savedAccount = accountRepository.save(account);
 
         log.info("Account created successfully: {}", savedAccount.getAccountNumber());
 
-        return MapToRes
+        return MapToResponse(savedAccount);
+    }
 
-        return AccountResponse.builder()
-                .id(savedAccount.getId())
-                .accountNumber(savedAccount.getAccountNumber())
-                .accountHolderName(savedAccount.getAccountHolderName())
-                .email(savedAccount.getEmail())
-                .phone(savedAccount.getPhone())
-                .accountType(savedAccount.getAccountType())
-                .accountStatus(savedAccount.getAccountStatus())
-                .balance(savedAccount.getBalance())
-                .dailyTransactionLimit(savedAccount.getDailyTransactionLimit())
-                .createdAt(savedAccount.getCreatedAt())
-                .build();
+    private String generateAccountNumber() {
+        String accountNumber;
+        do {
+            long number = secureRandom.nextLong(1000000000000L);
+//            long number = secureRandom.nextLong(100000000000L, 1000000000000L);
+            accountNumber = String.format("%012d", number);
+        }while (accountRepository.existsByAccountNumber(accountNumber));
+        return accountNumber;
+    }
+
+    private AccountResponse MapToResponse(Account account) {
+        AccountResponse response = new AccountResponse();
+        response.setId(account.getId());
+        response.setAccountHolderName(account.getAccountHolderName());
+        response.setAccountNumber(account.getAccountNumber());
+        response.setEmail(account.getEmail());
+        response.setPhone(account.getPhone());
+        response.setAccountType(account.getAccountType());
+        response.setAccountStatus(account.getAccountStatus());
+        response.setBalance(account.getBalance());
+        response.setDailyTransactionLimit(account.getDailyTransactionLimit());
+        response.setCreatedAt(account.getCreatedAt());
+
+        return response;
+
     }
 
     @Override

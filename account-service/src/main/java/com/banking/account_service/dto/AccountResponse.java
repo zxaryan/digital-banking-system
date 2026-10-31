@@ -2,11 +2,17 @@ package com.banking.account_service.dto;
 
 import com.banking.account_service.entity.AccountStatus;
 import com.banking.account_service.entity.AccountType;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class AccountResponse {
     private UUID id;
     private String accountNumber;
