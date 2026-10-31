@@ -78,26 +78,55 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public AccountResponse getAccount(String accountNumber) {
-        return null;
+        Account account = accountRepository.findByAccountNumber(accountNumber)
+                .orElseThrow(()->new RuntimeException("Account not found"));
+        return MapToResponse(account);
     }
 
     @Override
     public BigDecimal getBalance(String accountNumber) {
-        return null;
+        Account account = accountRepository.findByAccountNumber(accountNumber)
+                .orElseThrow(()->new RuntimeException("Account not found"));
+        return account.getBalance();
     }
 
-    @Override
+    @Override //Called by Fraud Detection service via Kafka
     public void blockAccount(String accountNumber) {
-
+        log.info("Blocking account for: {}", accountNumber);
+        Account account = accountRepository.findByAccountNumber(accountNumber)
+                .orElseThrow(()->new RuntimeException("Account not found"));
+        account.setAccountStatus(AccountStatus.BLOCKED);
+        accountRepository.save(account);
+        log.info("Account blocked: {}", accountNumber);
     }
 
-    @Override
+    @Override //Called by Transaction Service via Kafka
     public void debitAmount(String accountNumber, BigDecimal amount) {
+        log.info("Deducting account {} for account: {}",amount, accountNumber);
+        Account account = accountRepository.findByAccountNumber(accountNumber)
+                .orElseThrow(()->new RuntimeException("Account not found"));
+        if (account.getAccountStatus() == AccountStatus.INACTIVE){
+            throw new RuntimeException("Account is inactive");
+        }
+        if (account.getBalance().compareTo(amount) < 0){
+            throw new RuntimeException("Insufficient funds for account "+ accountNumber);
+        }
+        account.setBalance(account.getBalance().subtract(amount));
+        accountRepository.save(account);
 
+        log.info("Balance Updated. new balance: {}",account.getBalance());
     }
 
-    @Override
+    @Override //Called by Transaction Service via Kafka
     public void creditAmount(String accountNumber, BigDecimal amount) {
+        log.info("Crediting account {} for account: {}",amount, accountNumber);
+        Account account = accountRepository.findByAccountNumber(accountNumber)
+                .orElseThrow(()->new RuntimeException("Account not found"));
+        account.setBalance(account.getBalance().add(amount));
+
+        accountRepository.save(account);
+
+        log.info("Balance Credited. new balance: {}",account.getBalance());
 
     }
 }
