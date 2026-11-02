@@ -17,13 +17,13 @@ public class Transaction {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
+    private String id;
 
     @Column(nullable = false)
-    private UUID senderAccountNumber;
+        private String senderAccountNumber;
 
     @Column(nullable = false)
-    private UUID receiverAccountNumber;
+    private String receiverAccountNumber;
 
     @Column(nullable = false, precision = 15, scale = 2)
     private BigDecimal amount;
