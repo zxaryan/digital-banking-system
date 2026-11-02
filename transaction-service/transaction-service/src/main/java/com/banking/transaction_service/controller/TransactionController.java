@@ -26,7 +26,7 @@ public class TransactionController {
     }
 
     @GetMapping("/{transactionId}")
-    public ResponseEntity<TransactionResponse> getTransaction(@PathVariable UUID transactionId){
+    public ResponseEntity<TransactionResponse> getTransaction(@PathVariable String transactionId){
         return ResponseEntity.ok(transactionService.getTransaction(transactionId));
     }
 
@@ -36,7 +36,7 @@ public class TransactionController {
     }
 
     @PostMapping("/{transactionId}/verify")
-    public ResponseEntity<TransactionResponse> verifyOTP(@PathVariable UUID transactionId, @RequestParam String otp){
+    public ResponseEntity<TransactionResponse> verifyOTP(@PathVariable String transactionId, @RequestParam String otp){
         log.info("OTP verification request - transaction: {}", transactionId);
         return ResponseEntity.ok(transactionService.verifyOTP(transactionId, otp));
     }
