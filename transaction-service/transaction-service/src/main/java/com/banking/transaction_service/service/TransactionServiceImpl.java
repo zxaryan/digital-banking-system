@@ -29,11 +29,10 @@ public class TransactionServiceImpl implements TransactionService {
     private static final String TRANSACTION_COMPLETED_TOPIC="transaction.completed";
     private static final String TRANSACTION_REFUNDED_TOPIC="transaction.refunded";
 
-    @Override // SAGA step 1 - Initiate Transfer - deduct from sender via feign client - save transaction as processing => publish event for Kafka for fraud check - returns
+    @Override
     public TransactionResponse transfer(TransferRequest request) {
-        log.info("SAGA start - transfer: {} -> {} amount: {}", request.getSenderAccountNumber(), request.getReceiverAccountNumber(), request.getAmount());
-        accountServiceClient.debitAmount(request.getSenderAccountNumber(), request.getAmount());
 
+        // 1. Create transaction as PENDING
         Transaction transaction = new Transaction();
         transaction.setSenderAccountNumber(request.getSenderAccountNumber());
         transaction.setReceiverAccountNumber(request.getReceiverAccountNumber());
@@ -43,9 +42,20 @@ public class TransactionServiceImpl implements TransactionService {
         transaction.setDescription(request.getDescription());
         transaction.setReferenceNumber(UUID.randomUUID().toString());
 
+        // 2. Save transaction before remote debit
         Transaction savedTransaction = transactionRepository.save(transaction);
-        log.info("Transaction saved as PROCESSING: {}",savedTransaction.getId());
 
+        // 3. Debit sender account
+        accountServiceClient.debitAmount(
+                savedTransaction.getSenderAccountNumber(),
+                savedTransaction.getAmount()
+        );
+
+        // 4. Update transaction status
+        savedTransaction.setStatus(TransactionStatus.PROCESSING);
+        savedTransaction = transactionRepository.save(savedTransaction);
+
+        // 5. Publish Kafka event
         TransactionInitiatedEvent event = new TransactionInitiatedEvent(
                 savedTransaction.getId(),
                 savedTransaction.getSenderAccountNumber(),
@@ -54,8 +64,12 @@ public class TransactionServiceImpl implements TransactionService {
                 savedTransaction.getDescription()
         );
 
-        kafkaTemplate.send(TRANSACTION_INITIATED_TOPIC, savedTransaction.getId(), event);
-        log.info("SAGA step 2 - TransactionInitiatedEvent published: {}",savedTransaction.getId());
+        kafkaTemplate.send(
+                TRANSACTION_INITIATED_TOPIC,
+                savedTransaction.getId(),
+                event
+        );
+
         return mapToResponse(savedTransaction);
     }
 

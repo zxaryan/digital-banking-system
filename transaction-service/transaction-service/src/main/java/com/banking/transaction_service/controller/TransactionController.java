@@ -10,9 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Collections;
 import java.util.List;
-import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
@@ -32,7 +30,7 @@ public class TransactionController {
 
     @GetMapping("/account/{accountNumber}")
     public ResponseEntity<List<TransactionResponse>> getTransactionHistory(@PathVariable String accountNumber){
-        return ResponseEntity.ok(Collections.singletonList(transactionService.getTransactionHistory(accountNumber)));
+        return ResponseEntity.ok(transactionService.getTransactionHistory(accountNumber));
     }
 
     @PostMapping("/{transactionId}/verify")
