@@ -24,3 +24,6 @@ management:
     web:
       exposure:
         include: health,info
+
+fraud:
+  max-transaction-per-minute: 5

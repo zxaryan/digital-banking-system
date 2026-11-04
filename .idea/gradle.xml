@@ -49,11 +49,10 @@
         </option>
       </GradleProjectSettings>
       <GradleProjectSettings>
-        <option name="externalProjectPath" value="$PROJECT_DIR$/transaction-service/transaction-service" />
-        <option name="gradleJvm" value="25" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$/transaction-service" />
         <option name="modules">
           <set>
-            <option value="$PROJECT_DIR$/transaction-service/transaction-service" />
+            <option value="$PROJECT_DIR$/transaction-service" />
           </set>
         </option>
       </GradleProjectSettings>
