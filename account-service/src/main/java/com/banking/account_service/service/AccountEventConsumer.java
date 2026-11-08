@@ -16,7 +16,7 @@ public class AccountEventConsumer {
 
     private final AccountService accountService;
 
-    @KafkaListener(topics = "transcation.completed")
+    @KafkaListener(topics = "transaction.completed")
     public void consumeTransactionCompleted(@Payload Map<String, Object> payload){
         try {
             String receiverAccount = (String) payload.get("receiverAccountNumber");

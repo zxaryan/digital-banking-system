@@ -2,6 +2,11 @@ spring:
   application:
     name: transaction-service
 
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
   datasource:
     url: jdbc:postgresql://localhost:5433/transaction_db
     username: postgres

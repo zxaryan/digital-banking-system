@@ -14,4 +14,6 @@ public interface AccountServiceClient {
     @PutMapping("/api/v1/accounts/{accountNumber}/debit")
     String debitAmount(@PathVariable String accountNumber, @RequestParam BigDecimal amount);
 
+    @PutMapping("/api/v1/accounts/{accountNumber}/credit")
+    String creditAmount(@PathVariable String accountNumber, @RequestParam BigDecimal amount);
 }

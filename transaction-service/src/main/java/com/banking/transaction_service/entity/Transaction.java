@@ -37,7 +37,6 @@ public class Transaction {
     private TransactionType type;
 
     private String description;
-
     private String failureReason;
 
     private String referenceNumber;
