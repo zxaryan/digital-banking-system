@@ -21,7 +21,7 @@ public class FraudDetectionServiceImpl implements FraudDetectionService {
     private final AccountServiceClient accountServiceClient;
     private final KafkaTemplate<String, Object> kafkaTemplate;
 
-    @Value("{fraud.max-transaction-per-minute}")
+    @Value("${fraud.max-transaction-per-minute}")
     private int maxTransactionsPerMinute;
 
     private static final String VERIFICATION_REQUIRED_TOPIC = "verification.required";

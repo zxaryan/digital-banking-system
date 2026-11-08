@@ -25,5 +25,9 @@ management:
       exposure:
         include: health,info
 
+account:
+  service:
+    url: http://localhost:8081
+
 fraud:
   max-transaction-per-minute: 5
