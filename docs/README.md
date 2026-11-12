@@ -1,4 +1,4 @@
-# Digital Banking System 
+# Digital Banking System - Microservices
 
 A Java and Spring Boot banking backend organized as independently built services. The repository currently contains account, transaction, fraud-detection, payment, notification, and API gateway modules. It does not currently contain a web or mobile frontend.
 
